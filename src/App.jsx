@@ -2,8 +2,7 @@ import { useState, useRef } from "react";
 import Home from "./Home.jsx";
 import Deck from "./Deck.jsx";
 
-const SAMPLE_DATA = [
-];
+const SAMPLE_DATA = [];
 
 const faceStyle = {
   position: "absolute", width: "100%", height: "100%",
@@ -54,6 +53,13 @@ export default function App() {
     setIndex(0); setFlipped(false); setDone(false);
   }
 
+  function shuffle() {
+    const shuffled = [...cards].sort(() => Math.random() - 0.5);
+    setCards(shuffled);
+    setKnown(new Set()); setUnknown(new Set());
+    setIndex(0); setFlipped(false); setDone(false);
+  }
+
   function retryUnknown() {
     const flagged = cards.filter(c => unknown.has(c.id));
     setCards(flagged);
@@ -86,19 +92,13 @@ export default function App() {
   if (page === "home") return <Home onStart={() => setPage("app")} />;
 
   if (page === "deck") return (
-  <Deck
-    onBack={() => setPage("app")}
-    onLoad={(parsed) => {
-      setCards(parsed);
-      reset();
-      setPage("app");
-    }}
-  />
-);
-
+    <Deck
+      onBack={() => setPage("app")}
+      onLoad={(parsed) => { setCards(parsed); reset(); setPage("app"); }}
+    />
+  );
 
   return (
-
     <div style={{
       minHeight: "100vh",
       background: "linear-gradient(135deg, #2a4a6b 0%, #1a6e94 40%, #2a7f9a 70%, #1a5a7c 100%)",
@@ -113,51 +113,37 @@ export default function App() {
             <div style={{ fontSize: 11, letterSpacing: 4, textTransform: "uppercase", color: "rgba(255,255,255,0.6)", marginBottom: 6 }}>Study Tool</div>
             <h1 style={{ margin: 0, fontSize: 30, fontWeight: 700, color: "#ffffff", letterSpacing: -0.5 }}>Flashcards</h1>
           </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            {cards.length > 0 && (
+              <button
+                onClick={shuffle}
+                style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.3)", color: "#ffffff", padding: "8px 18px", borderRadius: 10, cursor: "pointer", fontSize: 13, letterSpacing: 1, fontFamily: "'Georgia', serif", backdropFilter: "blur(8px)" }}
+                onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.2)"}
+                onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.1)"}
+              >⇄ Shuffle</button>
+            )}
             <button
               onClick={() => setPage("deck")}
-              style={{
-                background: "rgba(255,255,255,0.1)",
-                border: "1px solid rgba(255,255,255,0.3)", color: "#ffffff",
-                padding: "8px 18px", borderRadius: 10, cursor: "pointer",
-                fontSize: 13, letterSpacing: 1, fontFamily: "'Georgia', serif",
-                backdropFilter: "blur(8px)",
-              }}
+              style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.3)", color: "#ffffff", padding: "8px 18px", borderRadius: 10, cursor: "pointer", fontSize: 13, letterSpacing: 1, fontFamily: "'Georgia', serif", backdropFilter: "blur(8px)" }}
               onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.2)"}
               onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.1)"}
-            >
-              New Deck
-            </button>
+            >New Deck</button>
+          </div>
         </div>
 
-        {/* Back button */}
         <div style={{ width: "100%", maxWidth: 700, marginBottom: 20 }}>
           <button
             onClick={() => setPage("home")}
-            style={{
-              background: "rgba(255,255,255,0.1)",
-              border: "1px solid rgba(255,255,255,0.25)",
-              color: "#ffffff", padding: "8px 18px",
-              borderRadius: 10, cursor: "pointer",
-              fontSize: 13, fontFamily: "'Georgia', serif",
-              letterSpacing: 0.5,
-            }}
+            style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.25)", color: "#ffffff", padding: "8px 18px", borderRadius: 10, cursor: "pointer", fontSize: 13, fontFamily: "'Georgia', serif", letterSpacing: 0.5 }}
             onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.2)"}
             onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.1)"}
-          >
-            ← Home
-          </button>
+          >← Home</button>
         </div>
 
-        {/* Header */}
         <div style={{ width: "100%", maxWidth: 700, marginBottom: 36 }}></div>
 
-        {/* Progress */}
         <div style={{ marginTop: 22, height: 4, background: "rgba(255,255,255,0.2)", borderRadius: 2 }}>
-          <div style={{
-            height: "100%", width: `${progress}%`,
-            background: "rgba(255,255,255,0.8)",
-            borderRadius: 2, transition: "width 0.4s ease",
-          }} />
+          <div style={{ height: "100%", width: `${progress}%`, background: "rgba(255,255,255,0.8)", borderRadius: 2, transition: "width 0.4s ease" }} />
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 18, color: "rgba(255,255,255,0.6)" }}>
           <span>{cards.length} cards loaded</span>
@@ -171,28 +157,13 @@ export default function App() {
 
       {/* Import Panel */}
       {showImport && (
-        <div style={{
-          width: "100%", maxWidth: 700, marginBottom: 28,
-          background: "rgba(255,255,255,0.12)",
-          backdropFilter: "blur(16px)",
-          border: "1px solid rgba(255,255,255,0.25)",
-          borderRadius: 16, padding: 24,
-        }}>
+        <div style={{ width: "100%", maxWidth: 700, marginBottom: 28, background: "rgba(255,255,255,0.12)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 16, padding: 24 }}>
           <div style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>
-            Expected format:&nbsp;
-            <code style={{ color: "#7effa0" }}>[{`{"id":1,"front":"...","back":"..."}`}, ...]</code>
+            Expected format:&nbsp;<code style={{ color: "#7effa0" }}>[{`{"id":1,"front":"...","back":"..."}`}, ...]</code>
           </div>
-          <textarea
-            value={jsonInput}
-            onChange={e => setJsonInput(e.target.value)}
+          <textarea value={jsonInput} onChange={e => setJsonInput(e.target.value)}
             placeholder='[{"id": 1, "front": "Question", "back": "Answer"}]'
-            style={{
-              width: "100%", height: 130,
-              background: "rgba(0,0,0,0.2)",
-              border: "1px solid rgba(255,255,255,0.2)", borderRadius: 8,
-              color: "#ffffff", fontFamily: "monospace", fontSize: 13,
-              padding: 12, resize: "vertical", outline: "none",
-            }}
+            style={{ width: "100%", height: 130, background: "rgba(0,0,0,0.2)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 8, color: "#ffffff", fontFamily: "monospace", fontSize: 13, padding: 12, resize: "vertical", outline: "none" }}
           />
           {jsonError && <div style={{ color: "#ffb3b3", fontSize: 13, marginTop: 8 }}>{jsonError}</div>}
           <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
@@ -205,13 +176,7 @@ export default function App() {
 
       {/* Complete */}
       {done ? (
-        <div style={{
-          width: "100%", maxWidth: 700, textAlign: "center",
-          background: "rgba(255,255,255,0.12)",
-          backdropFilter: "blur(16px)",
-          border: "1px solid rgba(255,255,255,0.25)",
-          borderRadius: 20, padding: "64px 40px",
-        }}>
+        <div style={{ width: "100%", maxWidth: 700, textAlign: "center", background: "rgba(255,255,255,0.12)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 20, padding: "64px 40px" }}>
           <div style={{ fontSize: 52, marginBottom: 18 }}>🎉</div>
           <h2 style={{ margin: "0 0 10px", fontSize: 26, color: "#ffffff" }}>Deck Complete</h2>
           <p style={{ color: "rgba(255,255,255,0.7)", marginBottom: 36, fontSize: 15 }}>
@@ -245,13 +210,11 @@ export default function App() {
               transition: "transform 0.55s cubic-bezier(0.4,0,0.2,1)",
               transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
             }}>
-              {/* Front */}
               <div style={{ ...faceStyle, background: "#ffffff", boxShadow: "0 20px 60px rgba(0,0,0,0.25)" }}>
                 <div style={{ fontSize: 15, letterSpacing: 3, textTransform: "uppercase", color: "#2d8a57", marginBottom: 22 }}>Question</div>
                 <div style={{ fontSize: 25, lineHeight: 1.65, color: "#1a3a2a", textAlign: "center", maxWidth: 520 }}>{current.front}</div>
                 <div style={{ position: "absolute", bottom: 22, fontSize: 11, color: "#a0c4b0", letterSpacing: 2 }}>CLICK TO REVEAL</div>
               </div>
-              {/* Back */}
               <div style={{ ...faceStyle, background: "#f0faf4", boxShadow: "0 20px 60px rgba(0,0,0,0.25)", transform: "rotateY(180deg)", borderTop: "4px solid #2d8a57" }}>
                 <div style={{ fontSize: 15, letterSpacing: 3, textTransform: "uppercase", color: "#2d8a57", marginBottom: 22 }}>Answer</div>
                 <div style={{ fontSize: 25, lineHeight: 1.75, color: "#1a3a2a", textAlign: "center", maxWidth: 540 }}>{current.back}</div>
